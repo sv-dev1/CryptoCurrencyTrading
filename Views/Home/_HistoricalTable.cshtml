@@ -1,0 +1,41 @@
+﻿@using Crypto.Models
+@using System.Globalization;
+@model Ticklers
+
+<div class="table-responsive">
+    <table id="dataTable1" style="width:100% !important" class="table table-striped table-lightfont">
+        <tr>
+            <th>Date</th>
+            <th>Open*</th>
+            <th>High</th>
+            <th>Low</th>
+            <th>Close**</th>
+            <th>Volume</th>
+        </tr>
+        @foreach (var items in Model.ListChartParameters)
+        {
+            <tr>
+                <td>@items.ChartDate.ToString("MMM dd yyyy")</td>
+                <td>@items.Open</td>
+                <td>@items.High</td>
+                <td>@items.Low</td>
+                <td>@items.Close</td>
+                <td>@items.Volume.ToString("N", CultureInfo.CreateSpecificCulture("en-US")).Replace(".00", "")</td>
+                @*<td>@items.</td>*@
+            </tr>
+        }
+
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $('#dataTable1').dataTable({
+            "pageLength": 100,
+            "lengthMenu": [[100, 200, 300, -1], [100, 200, 300, "All"]],
+            "order": []
+        });
+    });
+</script>
+

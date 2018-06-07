@@ -1,0 +1,101 @@
+﻿@using Crypto.Models
+@using System.Globalization;
+@model List<Ticklers>
+
+<style>
+    .row {
+        width: 100% !important;
+    }
+</style>
+
+<div class="table-responsive">
+    <table id="dataTable1" style="width:100% !important" class="table table-striped table-lightfont">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Market Cap</th>
+                <th>Price</th>
+                <th>Volume (24h)</th>
+                <th>Circulating Supply</th>
+                <th>Change (24h)</th>
+
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>Name</th>
+                <th>Market Cap</th>
+                <th>Price</th>
+                <th>Volume (24h)</th>
+                <th>Circulating Supply</th>
+                <th>Change (24h)</th>
+
+            </tr>
+        </tfoot>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <a href="@Url.Action("CurrencyDetail","Home",new {symbol=item.id })">@item.name</a>
+                    </td>
+
+                    @if (@item.quotes.USD.market_cap != null)
+                    {
+                        <td>
+                            @item.quotes.USD.market_cap.Value.ToString("C", CultureInfo.CreateSpecificCulture("en-US")).Replace(".00", "")
+                        </td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+
+                    @if (@item.quotes.USD.price != null)
+                    {
+                        <td>@item.quotes.USD.price.Value.ToString("C3", CultureInfo.CreateSpecificCulture("en-US"))</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                    @if (@item.quotes.USD.volume_24h != null)
+                    {
+                        <td>@item.quotes.USD.volume_24h.Value.ToString("C", CultureInfo.CreateSpecificCulture("en-US")).Replace(".00", "")</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                    @if (@item.circulating_supply != null)
+                    {
+                        <td>@item.circulating_supply.Value.ToString("N", CultureInfo.CreateSpecificCulture("en-US")).Replace(".00", "") @item.symbol</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+
+
+
+                    <td>@item.quotes.USD.percent_change_24h</td>
+                </tr>
+            }
+
+
+        </tbody>
+    </table>
+</div>
+<script src="../Content/bower_components/jquery/dist/jquery.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+
+        $('#dataTable1').dataTable({
+            "pageLength": 100,
+            "lengthMenu": [[100, 200, 300, -1], [100, 200, 300, "All"]],
+            "order": []
+        });
+    });
+
+</script>

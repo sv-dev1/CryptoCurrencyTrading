@@ -1,0 +1,65 @@
+﻿<div id="container">
+
+</div>
+<script>
+    $(document).ready(function () {
+
+         var result =  @Html.Raw(ViewBag.DataPoints);
+        var dataPoints = [];
+        for (var i = 0; i < result.length; i++){
+            var newdate = new Date(result[i].ChartDate);
+            dataPoints.push({ x: Date.UTC(newdate.getUTCFullYear(), newdate.getMonth() + 1, newdate.getUTCDate()), open: result[i].Open, high: result[i].High, low: result[i].Low, close: result[i].Close});
+        }
+     Highcharts.stockChart('container', {
+
+                    chart: {
+                        events: {
+                            load: function () {
+                                var extremes = this.xAxis[0].getExtremes();
+                                //this.xAxis[0].setExtremes(extremes.dataMax - 5*60*1000, extremes.dataMax, true);
+
+                                // set up the updating of the chart each second
+                                var series = this.series[0];
+                                setInterval(function () {
+                                    var x = (new Date()).getTime(), // current time
+                                        y = Math.round(Math.random() * 100);
+                                    series.addPoint([x, y], true, true);
+                                }, 1000);
+                            }
+                        }
+                    },
+                    rangeSelector: {
+                        enabled: false
+                    },
+                    scrollbar: {
+                        enabled: false
+                    },
+                    navigator: {
+                        enabled: false
+                    },
+
+            title: {
+                text: 'Coin Charts'
+            },
+
+            series: [{
+                type: 'candlestick',
+                name: 'Bunny Coin Charts',
+                data: dataPoints,
+                dataGrouping: {
+                    units: [
+                        [
+                            'week', // unit name
+                            [1] // allowed multiples
+                        ], [
+                            'month',
+                            [1, 2, 3, 4, 6]
+                        ]
+                    ]
+                }
+            }]
+        });
+
+    })
+
+</script>

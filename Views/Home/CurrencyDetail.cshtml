@@ -1,0 +1,294 @@
+﻿@using Crypto.Models
+@using System.Globalization;
+@model Ticklers
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<style>
+
+    .currency_detail h2 .usd_color {
+        color: #de1b1b;
+    }
+
+    .currency_detail table th {
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    .currency_detail table td {
+        padding: 8px;
+    }
+
+    .currency_detail h2 {
+        font-size: 25px;
+        color: #000;
+        margin-bottom: 20px;
+    }
+
+    .currency_detail .usd_code {
+        font-size: 14px;
+        color: #000;
+    }
+
+    .tabbar-top {
+        margin-top: 50px;
+    }
+
+        .tabbar-top .nav-tabs > li.active > a, .tabbar-top .nav-tabs > li.active > a:focus, .tabbar-top .nav-tabs > li.active > a:hover {
+            background-color: transparent;
+            border-bottom-color: transparent;
+        }
+
+        .tabbar-top .nav-tabs li.active {
+            border-bottom-color: transparent;
+        }
+
+
+        .tabbar-top .nav-tabs > li > a:hover {
+            border-color: transparent;
+            border-bottom: none;
+        }
+
+        .tabbar-top .tab-content h3 {
+            font-size: 20px;
+        }
+
+    .ltc {
+        font-size: 16px;
+        font-weight: bold;
+        color: #999;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 1300px;
+    }
+
+    #FooBarDropDown {
+        height: 40px;
+        float: right;
+        width: 26%;
+    }
+</style>
+<div class="currency_detail">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3"> <h2>@Model.name <span class="ltc">(@Model.symbol)</span></h2></div>
+
+            <div class="col-sm-9">
+                <h2>@Model.quotes.USD.price.Value.ToString("C3", CultureInfo.CreateSpecificCulture("en-US")) <span class="usd_code">USD</span> <span class="usd_color">(@Model.quotes.USD.percent_change_24h%)</span></h2>
+
+                <table width="100%">
+                    <tr>
+                        <th>Market Cap</th>
+                        <th>Volume (24h)</th>
+                        <th>Circulating Supply</th>
+                        <th>Max Supply</th>
+                    </tr>
+                    <tr>
+                        <td>@Model.quotes.USD.market_cap.Value.ToString("C", CultureInfo.CreateSpecificCulture("en-US")).Replace(".00", "") USD</td>
+                        <td>@Model.quotes.USD.volume_24h.Value.ToString("C", CultureInfo.CreateSpecificCulture("en-US")).Replace(".00", "") USD</td>
+                        <td>@Model.circulating_supply.Value.ToString("N", CultureInfo.CreateSpecificCulture("en-US")).Replace(".00", "") @Model.symbol</td>
+                        <td>@Model.total_supply.Value.ToString("C", CultureInfo.CreateSpecificCulture("en-US")).Replace(".00", "") @Model.symbol</td>
+                    </tr>
+
+                    <tr>
+                        <td>@Model.total_supply @Model.symbol</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-sm-12 tabbar-top">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#containertab">Charts</a></li>
+                    <li><a data-toggle="tab" href="#menu1">Historical Data</a></li>
+                    @*<li><a data-toggle="tab" href="#menu2">Menu 2</a></li>
+                    <li><a data-toggle="tab" href="#menu3">Menu 3</a></li>*@
+                </ul>
+
+                <div class="tab-content">
+                    <div class="chart-block tab-pane fade in active" id="containertab">
+                        <div>
+                            <div class="reloadbutton-btn">
+                                <button onclick="reloadbutton('1Min')">1Min</button>
+                                <button onclick="reloadbutton('1Hour')">1Hour</button>
+                                <button onclick="reloadbutton('1Day')">1Day</button>
+                                <button onclick="reloadbutton('7Days')">7Days</button>
+                                <button onclick="reloadbutton('14Days')">14Days</button>
+                                <button onclick="reloadbutton('1Month')">1Month</button>
+                            </div>
+                            <div id="ChartTable">
+                                @Html.Partial("_ChartTable")
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="menu1" class="tab-pane fade in">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                <h3>Historical Data</h3>
+                                <h5 style="margin-top: 20px;margin-bottom: 0;">
+                                    Currency in USD
+                                </h5>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                <div class="currency-text" style="margin-top: 55px;">
+                                    <div class="text-right">
+
+
+
+                                        @Html.DropDownList("FooBarDropDown", new List<SelectListItem>
+                                                                                                                                                                                                                                                                                                                                                                                                            {
+                                                                                                                                                                                                                                                                                                                                                                                                                new SelectListItem{ Text="Select Time Limit", Value = "0" },
+                                                                                                                                                                                                                                                                                                                                                                                                                new SelectListItem{ Text="1 Min", Value = "1" },
+                                                                                                                                                                                                                                                                                                                                                                                                                new SelectListItem{ Text="1 Hour", Value = "2" },
+                                                                                                                                                                                                                                                                                                                                                                                                                new SelectListItem{ Text="1 Day", Value = "3" },
+                                                                                                                                                                                                                                                                                                                                                                                                                new SelectListItem{ Text="7 Days", Value = "4" },
+                                                                                                                                                                                                                                                                                                                                                                                                                new SelectListItem{ Text="14 Days", Value = "5" },
+                                                                                                                                                                                                                                                                                                                                                                                                                new SelectListItem{ Text="30 Days", Value = "6" },
+                                                                                                                                                                                                                                                                                                                                                                                                            }, new { @class = "form-control" })
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12  historicaltable-block">
+                                <div id="HistoricalTable">
+                                    @Html.Partial("_HistoricalTable")
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                    @*<div id="menu2" class="tab-pane fade in">
+                        <h3>Menu 2</h3>
+
+                    </div>
+                    <div id="menu3" class="tab-pane fade in">
+                        <h3>Menu 3</h3>
+
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../Content/bower_components/jquery/dist/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script>
+
+
+     function reloadbutton(val) {
+             $.ajax({
+            url: '@Url.Action("_ChartTable", "Home")',
+            type: 'GET',
+            data: { sym: 1, selectedval: val},
+            success: function (data) {
+                $('#ChartTable').html(data);
+
+            }
+        });
+        }
+
+    $(document).ready(function () {
+      
+
+        function GetQueryStringParams(sParam) {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            var sParameterName = sURLVariables[0].split('=');
+            return sParameterName[1];
+        }
+
+        $('#FooBarDropDown').change(function () {
+            var selectedSymbol = GetQueryStringParams('symbol');
+            var selectedval = $('#FooBarDropDown option:selected').text();
+
+            var selectedvaltext = $('#FooBarDropDown option:selected').val();
+            if (selectedvaltext != 0) {
+
+                $.ajax({
+                    url: '@Url.Action("_HistoricalTable", "Home")',
+                    type: 'GET',
+                    data: { sym: selectedSymbol, drpdownval: selectedval },
+                    success: function (data) {
+                        $('#HistoricalTable').html(data);
+                    }
+                });
+            }
+
+
+        })
+        var result =  @Html.Raw(ViewBag.DataPoints);
+        var dataPoints = [];
+        for (var i = 0; i < result.length; i++){
+            var newdate = new Date(result[i].ChartDate);
+            dataPoints.push({ x: Date.UTC(newdate.getUTCFullYear(), newdate.getMonth() + 1, newdate.getUTCDate()), open: result[i].Open, high: result[i].High, low: result[i].Low, close: result[i].Close});
+        }
+
+
+        $('.nav-tabs a').click(function () {
+            $(".nav.nav-tabs").find('li').removeClass("active");
+            $(this).tab('show');
+            $(this).parent().addClass("active");
+            $(".tab-content").children().find("div").removeClass("in");
+            $(".tab-content").children().find("div").removeClass("active");
+        })
+
+                Highcharts.stockChart('container', {
+
+                    chart: {
+                        events: {
+                            load: function () {
+                                var extremes = this.xAxis[0].getExtremes();
+                                //this.xAxis[0].setExtremes(extremes.dataMax - 5*60*1000, extremes.dataMax, true);
+
+                                // set up the updating of the chart each second
+                                var series = this.series[0];
+                                setInterval(function () {
+                                    var x = (new Date()).getTime(), // current time
+                                        y = Math.round(Math.random() * 100);
+                                    series.addPoint([x, y], true, true);
+                                }, 1000);
+                            }
+                        }
+                    },
+                    rangeSelector: {
+                        enabled: false
+                    },
+                    scrollbar: {
+                        enabled: false
+                    },
+                    navigator: {
+                        enabled: false
+                    },
+
+            title: {
+                text: 'Coin Charts'
+            },
+
+            series: [{
+                type: 'candlestick',
+                name: 'Bunny Coin Charts',
+                data: dataPoints,
+                dataGrouping: {
+                    units: [
+                        [
+                            'week', // unit name
+                            [1] // allowed multiples
+                        ], [
+                            'month',
+                            [1, 2, 3, 4, 6]
+                        ]
+                    ]
+                }
+            }]
+        });
+    });
+</script>
